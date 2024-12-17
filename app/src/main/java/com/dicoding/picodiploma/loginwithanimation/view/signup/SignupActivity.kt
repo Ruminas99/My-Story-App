@@ -88,9 +88,11 @@ class SignupActivity : AppCompatActivity() {
         signupViewModel.registerResult.observe(this) { message ->
             AlertDialog.Builder(this).apply {
                 setTitle("Status Registrasi")
-                setMessage("Akun sudah dibuat ayo langsung login!")
+                setMessage(message)
                 setPositiveButton("OK") { _, _ ->
-                    finish()
+                    if (message.contains("Sukses")) {
+                        finish()
+                    }
                 }
                 create()
                 show()
