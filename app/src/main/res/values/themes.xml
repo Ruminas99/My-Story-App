@@ -1,0 +1,16 @@
+<resources>
+
+    <style name="Base.Theme.LoginWithAnimation" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/navy</item>
+        <item name="colorPrimaryVariant">@color/gray</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnBackground">@color/black</item>
+        <item name="colorSurface">@color/white_smoke</item>
+        <item name="colorOnSurface">@color/black</item>
+    </style>
+
+    <style name="Theme.LoginWithAnimation" parent="Base.Theme.LoginWithAnimation" />
+</resources>
