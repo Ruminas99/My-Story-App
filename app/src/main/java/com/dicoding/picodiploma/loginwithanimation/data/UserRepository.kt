@@ -1,5 +1,10 @@
 package com.dicoding.picodiploma.loginwithanimation.data
 
+import androidx.lifecycle.LiveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
 import com.dicoding.picodiploma.loginwithanimation.api.ApiService
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
@@ -45,10 +50,6 @@ class UserRepository private constructor(private val userPreference: UserPrefere
         return response
     }
 
-    fun isTokenAvailable(): Flow<Boolean> {
-        return userPreference.isTokenAvailable()
-    }
-
     suspend fun getStory(): List<ListStoryItem> {
         return try {
             val response = apiService.getStories()
@@ -71,6 +72,24 @@ class UserRepository private constructor(private val userPreference: UserPrefere
     ): AddStoryResponse {
         return apiService.uploadImage(file, description)
     }
+    suspend fun getStoryWithLocation() : List<ListStoryItem>{
+        return try {
+            val response = apiService.getStories(location = 1)
+            response.listStory?.filterNotNull() ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun getStories(): LiveData<PagingData<ListStoryItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 5
+            ),
+            pagingSourceFactory = { StoryPagingSource(apiService)}
+        ).liveData
+    }
+
     companion object {
         @Volatile
         private var instance: UserRepository? = null

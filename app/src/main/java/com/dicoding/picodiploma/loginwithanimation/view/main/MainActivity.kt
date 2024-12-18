@@ -16,16 +16,15 @@ import com.dicoding.picodiploma.loginwithanimation.databinding.ActivityMainBindi
 import com.dicoding.picodiploma.loginwithanimation.view.detail.DetailActivity
 import com.dicoding.picodiploma.loginwithanimation.view.ViewModelFactory
 import com.dicoding.picodiploma.loginwithanimation.view.welcome.WelcomeActivity
-import com.dicoding.picodiploma.loginwithanimation.Result
 import com.dicoding.picodiploma.loginwithanimation.view.add.AddActivity
-import java.util.ArrayList
+import com.dicoding.picodiploma.loginwithanimation.view.map.MapsActivity
 
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this, ViewModelFactory.getInstance(this))[MainViewModel::class.java]
     }
-    private lateinit var storyAdapter: StoryAdapter
     private lateinit var binding: ActivityMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,15 +49,11 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
-        binding.addButton.setOnClickListener {
-            startActivity(Intent(this, AddActivity::class.java))
-            finish()
-        }
+
 
         setupView()
-        setupRecyclerView()
         setupAction()
-        observeStories()
+        getData()
         observeSession()
     }
 
@@ -69,7 +64,6 @@ class MainActivity : AppCompatActivity() {
                 finish()
             } else {
                 Toast.makeText(this, "Selamat Datang Kembali, ${user.name}", Toast.LENGTH_SHORT).show()
-                viewModel.getStory()
                 binding.imageView.text = getString(R.string.greeting, user.name)
             }
         }
@@ -92,31 +86,29 @@ class MainActivity : AppCompatActivity() {
         binding.logoutButton.setOnClickListener {
             viewModel.logout()
         }
+        binding.addButton.setOnClickListener {
+            startActivity(Intent(this, AddActivity::class.java))
+            finish()
+        }
+        binding.mapButton.setOnClickListener {
+            startActivity(Intent(this, MapsActivity::class.java))
+            finish()
+        }
     }
-    private fun setupRecyclerView() {
-        storyAdapter = StoryAdapter(ArrayList()) { id ->
+    private fun getData(){
+        val adapter = StoryListAdapter{ id ->
             navigateToDetail(id)
         }
         binding.storyRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.storyRecyclerView.adapter = storyAdapter
-        binding.storyRecyclerView.setHasFixedSize(true)
-    }
-    private fun observeStories() {
-        viewModel.stories.observe(this) { stories ->
-            when (stories) {
-                is Result.Success -> {
-                    storyAdapter.updateList(stories.data)
-                }
-                is Result.Error -> {
-                    Toast.makeText(this, stories.message, Toast.LENGTH_SHORT).show()
-                }
-                is Result.Loading -> {
-                    Toast.makeText(this, "Loading", Toast.LENGTH_SHORT).show()
-                }
+        binding.storyRecyclerView.adapter = adapter.withLoadStateFooter(
+            footer = LoadingStateAdapter{
+                adapter.retry()
             }
+        )
+        viewModel.story.observe(this) {
+            adapter.submitData(lifecycle, it)
         }
     }
-
     private fun navigateToDetail(placeId: String) {
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra("PLACE_ID", placeId)

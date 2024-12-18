@@ -9,14 +9,15 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="30dp">
+        android:padding="20dp">
 
         <ImageView
             android:id="@+id/event_image"
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:scaleType="centerCrop"
-            android:src="@color/black"/>
+            android:src="@color/black"
+            android:contentDescription="@string/story_image"/>
 
         <LinearLayout
             android:layout_width="match_parent"

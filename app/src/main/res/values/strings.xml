@@ -26,5 +26,10 @@
     <string name="galeri">Galeri</string>
     <string name="upload">Upload</string>
     <string name="masukkan_deskripsi_disini">Masukkan deskripsi disini</string>
+    <string name="map">Map</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="my_api_key">AIzaSyB9Z1YoZpFIwUQXOh94ObAR5l6BMLxCiqY</string>
+    <string name="retry">Coba Lagi!</string>
+    <string name="story_image">Story Image</string>
 
 </resources>

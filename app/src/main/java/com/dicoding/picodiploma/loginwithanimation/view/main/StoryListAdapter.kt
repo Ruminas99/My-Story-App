@@ -2,6 +2,7 @@ package com.dicoding.picodiploma.loginwithanimation.view.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -9,10 +10,9 @@ import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.databinding.ItemStoryRowBinding
 import com.dicoding.picodiploma.loginwithanimation.response.ListStoryItem
 
-class StoryAdapter(
-    private val stories: ArrayList<ListStoryItem>,
+class StoryListAdapter(
     private val onItemClick: (String) -> Unit
-) : RecyclerView.Adapter<StoryAdapter.StoryViewHolder>() {
+) : PagingDataAdapter<ListStoryItem, StoryListAdapter.StoryViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoryViewHolder {
         val binding = ItemStoryRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -20,18 +20,11 @@ class StoryAdapter(
     }
 
     override fun onBindViewHolder(holder: StoryViewHolder, position: Int) {
-        stories[position].let { holder.bind(it) }
+        val story = getItem(position)
+        if (story != null) {
+            holder.bind(story)
+        }
     }
-
-    fun updateList(newList: List<ListStoryItem>) {
-        val diffCallback = StoryDiffCallback(stories, newList)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        stories.clear()
-        stories.addAll(newList)
-        diffResult.dispatchUpdatesTo(this)
-    }
-
-    override fun getItemCount(): Int = stories.size
 
     class StoryViewHolder(
         private val binding: ItemStoryRowBinding,
@@ -52,18 +45,15 @@ class StoryAdapter(
         }
     }
 
-    private class StoryDiffCallback(
-        private val oldList: List<ListStoryItem>,
-        private val newList: List<ListStoryItem>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldList.size
-        override fun getNewListSize(): Int = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
-        }
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStoryItem>() {
+            override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
+                return oldItem.id == newItem.id
+            }
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
+            override fun areContentsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
+                return oldItem == newItem
+            }
         }
     }
 }

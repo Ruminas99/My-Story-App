@@ -29,6 +29,25 @@ class LoginActivity : AppCompatActivity() {
         playAnimation()
         setupView()
         setupAction()
+        setupObserver()
+    }
+
+    private fun setupObserver() {
+        viewModel.loginResult.observe(this) { result ->
+            AlertDialog.Builder(this).apply {
+                setTitle("Login Status")
+                setMessage(result)
+                setPositiveButton("OK") { _, _ ->
+                    if (result.contains("success", true)) {
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+                create()
+                show()
+            }
+        }
     }
 
     private fun playAnimation() {
@@ -71,24 +90,6 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
             viewModel.login(email, password)
-            viewModel.loginResult.observe(this) { result ->
-                AlertDialog.Builder(this).apply {
-                    setTitle(if (result.contains("Sukses")) "Yeah!" else "Oops!")
-                    setMessage(if (result.contains("Sukses")) "Anda berhasil login. Sudah tidak sabar untuk belajar ya?" else result)
-                    setPositiveButton(if (result.contains("Sukses")) "Lanjut" else "OK") { _, _ ->
-                        if (result.contains("Sukses")) {
-                            val intent = Intent(context, MainActivity::class.java)
-                            intent.flags =
-                                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                            startActivity(intent)
-                            finish()
-                        }
-                    }
-                    create()
-                    show()
-                }
-            }
-
         }
     }
 
